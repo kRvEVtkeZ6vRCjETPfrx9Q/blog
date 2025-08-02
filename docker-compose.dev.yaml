@@ -1,12 +1,14 @@
 version: '3.9'
 services:
   mongo:
+    container_name: blog-mongo-dev
     image: mongo:6
     ports:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db
   backend:
+    container_name: blog-backend-dev
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
@@ -20,6 +22,7 @@ services:
     depends_on:
       - mongo
   frontend:
+    container_name: blog-frontend-dev
     build:
       context: frontend
     ports:

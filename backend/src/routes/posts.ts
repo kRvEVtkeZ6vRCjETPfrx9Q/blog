@@ -5,7 +5,6 @@ import auth, { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// Create post
 router.post(
   '/',
   auth,
@@ -24,7 +23,6 @@ router.post(
   }
 );
 
-// Get posts with filtering/search/sorting
 router.get('/', async (req, res) => {
   const { search, tags, sort = 'createdAt', order = 'desc' } = req.query as any;
   const query: any = {};
@@ -45,7 +43,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get single post
 router.get('/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -56,7 +53,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Update post
 router.put(
   '/:id',
   auth,
@@ -79,7 +75,6 @@ router.put(
   }
 );
 
-// Delete post
 router.delete('/:id', auth, async (req: AuthRequest, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
@@ -90,7 +85,6 @@ router.delete('/:id', auth, async (req: AuthRequest, res) => {
   }
 });
 
-// Add comment
 router.post(
   '/:id/comments',
   auth,
