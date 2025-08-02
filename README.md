@@ -18,6 +18,12 @@ make down
 
 ## Development
 
+Build the development images:
+
+```
+make build-dev
+```
+
 Run hot-reloading backend, Vite dev server and MongoDB:
 
 ```
