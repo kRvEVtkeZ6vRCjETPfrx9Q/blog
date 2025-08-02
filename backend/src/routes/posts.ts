@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Post from '../models/Post';
 import auth, { AuthRequest } from '../middleware/auth';
@@ -9,7 +9,7 @@ router.post(
   '/',
   auth,
   [body('title').notEmpty(), body('description').notEmpty()],
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     try {
@@ -57,7 +57,7 @@ router.put(
   '/:id',
   auth,
   [body('title').notEmpty(), body('description').notEmpty()],
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     try {
@@ -89,7 +89,7 @@ router.post(
   '/:id/comments',
   auth,
   [body('text').notEmpty()],
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     try {
