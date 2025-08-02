@@ -1,14 +1,17 @@
 .RECIPEPREFIX = >
-.PHONY: build-backend build-frontend up down
+.PHONY: build up down dev dev-down
 
-build-backend:
-> docker build -t blog-backend ./backend
+build:
+> docker build -t blog-backend -f backend/Dockerfile .
 
-build-frontend:
-> docker build -t blog-frontend ./frontend
-
-up: build-backend build-frontend
+up: build
 > docker-compose up -d
 
 down:
 > docker-compose down
+
+dev:
+> docker-compose -f docker-compose.dev.yaml up --build
+
+dev-down:
+> docker-compose -f docker-compose.dev.yaml down

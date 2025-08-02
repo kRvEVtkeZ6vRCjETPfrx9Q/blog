@@ -1,19 +1,31 @@
 # Blog
 
-This project demonstrates a full-stack blogging application.
+Full-stack blogging application with Node.js, Express, MongoDB and a React frontend.
 
-## Development
+## Production
 
-Build and start the stack:
+Build the backend (which bundles the frontend) and start services:
 
 ```
 make up
 ```
 
-This builds the backend and frontend Docker images and starts them along with MongoDB.
-
-Stop the stack with:
+Stop services:
 
 ```
 make down
+```
+
+## Development
+
+Run hot-reloading backend, Vite dev server and MongoDB:
+
+```
+make dev
+```
+
+Stop the development stack:
+
+```
+make dev-down
 ```

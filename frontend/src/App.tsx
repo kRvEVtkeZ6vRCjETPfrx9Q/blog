@@ -1,55 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from './context/AuthContext';
+import NavBar from './components/NavBar';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Posts from './pages/Posts';
+import PostDetail from './pages/PostDetail';
+import PostForm from './pages/PostForm';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-
-interface Post {
-  _id: string;
-  title: string;
-  description: string;
-}
-
-export default function App() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-
-  useEffect(() => {
-    api.get('/posts').then((res) => setPosts(res.data));
-  }, []);
-
-  const createPost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    const res = await api.post(
-      '/posts',
-      { title, description },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setPosts([...posts, res.data]);
-    setTitle('');
-    setDescription('');
-  };
-
+function App() {
+  const { token } = useContext(AuthContext);
   return (
-    <div>
-      <h1>Blog Posts</h1>
-      <form onSubmit={createPost}>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description"
-        />
-        <button type="submit">Create</button>
-      </form>
-      <ul>
-        {posts.map((p) => (
-          <li key={p._id}>
-            <strong>{p.title}</strong>: {p.description}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <BrowserRouter>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/posts/new" element={token ? <PostForm /> : <Navigate to="/login" />} />
+        <Route path="/posts/:id/edit" element={token ? <PostForm /> : <Navigate to="/login" />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
