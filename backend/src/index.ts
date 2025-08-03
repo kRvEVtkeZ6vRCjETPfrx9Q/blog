@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import session from 'express-session';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 import { migrate } from './migrate';
@@ -10,8 +11,20 @@ import { migrate } from './migrate';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    },
+  })
+);
 
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/blog';
 

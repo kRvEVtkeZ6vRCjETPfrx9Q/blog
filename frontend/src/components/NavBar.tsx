@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { Button } from './ui/button';
 
 const NavBar: React.FC = () => {
-  const { token, logout } = useContext(AuthContext);
+  const { authenticated, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,18 +13,16 @@ const NavBar: React.FC = () => {
   };
 
   return (
-    <nav>
+    <nav className="space-x-2">
       <Link to="/">Home</Link> | <Link to="/posts">Posts</Link>
-      {token ? (
+      {authenticated ? (
         <>
-          {' '}
-          | <Link to="/posts/new">New Post</Link> |{' '}
-          <button onClick={handleLogout}>Logout</button>
+          {' '}| <Link to="/posts/new">New Post</Link> |{' '}
+          <Button variant="outline" onClick={handleLogout}>Logout</Button>
         </>
       ) : (
         <>
-          {' '}
-          | <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
+          {' '}| <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
         </>
       )}
     </nav>

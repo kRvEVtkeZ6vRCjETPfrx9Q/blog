@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Post from '../models/Post';
+import Comment from '../models/Comment';
 import auth, { AuthRequest } from '../middleware/auth';
 
 const router = Router();
@@ -47,7 +48,13 @@ router.get('/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
-    res.json(post);
+    const cachedIds = post.comments.map((c: any) => c._id);
+    const olderComments = await Comment.find({
+      post: post._id,
+      _id: { $nin: cachedIds }
+    }).sort({ createdAt: 1 });
+    const comments = [...olderComments, ...post.comments];
+    res.json({ ...post.toObject(), comments });
   } catch (err) {
     res.status(500).send('Server error');
   }
@@ -95,10 +102,18 @@ router.post(
     try {
       const post = await Post.findById(req.params.id);
       if (!post) return res.status(404).json({ message: 'Post not found' });
-      const comment = { user: req.user.userId, text: req.body.text };
-      post.comments.push(comment as any);
+      const comment = new Comment({
+        post: post._id,
+        user: req.user.userId,
+        text: req.body.text,
+      });
+      await comment.save();
+      post.comments.push({ user: comment.user, text: comment.text, createdAt: comment.createdAt } as any);
+      if (post.comments.length > 20) {
+        post.comments = post.comments.slice(-20);
+      }
       await post.save();
-      res.json(post);
+      res.json(comment);
     } catch (err) {
       res.status(500).send('Server error');
     }

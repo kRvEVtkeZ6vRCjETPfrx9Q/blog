@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
+import { Button } from '../components/ui/button';
 
 const PostForm: React.FC = () => {
   const { id } = useParams();
@@ -31,12 +32,27 @@ const PostForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>{id ? 'Edit' : 'New'} Post</h2>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-      <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-      <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags (comma separated)" />
-      <button type="submit">Save</button>
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <h2 className="text-xl font-bold">{id ? 'Edit' : 'New'} Post</h2>
+      <input
+        className="border p-2 w-full"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Title"
+      />
+      <textarea
+        className="border p-2 w-full"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Description"
+      />
+      <input
+        className="border p-2 w-full"
+        value={tags}
+        onChange={(e) => setTags(e.target.value)}
+        placeholder="Tags (comma separated)"
+      />
+      <Button type="submit">Save</Button>
     </form>
   );
 };

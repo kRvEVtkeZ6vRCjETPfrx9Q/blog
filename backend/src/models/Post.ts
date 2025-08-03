@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
-export interface IComment {
+export interface IPostComment {
   user: Types.ObjectId;
   text: string;
   createdAt: Date;
@@ -11,10 +11,10 @@ export interface IPost extends Document {
   description: string;
   createdAt: Date;
   tags: string[];
-  comments: IComment[];
+  comments: IPostComment[];
 }
 
-const CommentSchema = new Schema<IComment>({
+const CommentSchema = new Schema<IPostComment>({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
