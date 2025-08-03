@@ -1,7 +1,9 @@
-import { FormEvent, useContext, useEffect, useState } from 'react';
+import { FormEvent, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
+import { Button } from '../components/ui/button';
 
 interface Comment {
   text: string;
@@ -16,37 +18,45 @@ interface Post {
 
 const PostDetail: React.FC = () => {
   const { id } = useParams();
-  const [post, setPost] = useState<Post | null>(null);
   const [text, setText] = useState('');
-  const { token } = useContext(AuthContext);
+  const { authenticated } = useContext(AuthContext);
 
-  useEffect(() => {
-    api.get(`/posts/${id}`).then((res) => setPost(res.data));
-  }, [id]);
+  const { data: post, isLoading, refetch } = useQuery(['post', id], async () => {
+    const res = await api.get(`/posts/${id}`);
+    return res.data as Post;
+  });
 
-  const addComment = async (e: FormEvent) => {
+  const addCommentMutation = useMutation(
+    (content: string) => api.post(`/posts/${id}/comments`, { text: content }),
+    { onSuccess: () => refetch() }
+  );
+
+  const addComment = (e: FormEvent) => {
     e.preventDefault();
-    const res = await api.post(`/posts/${id}/comments`, { text });
-    setPost(res.data);
+    addCommentMutation.mutate(text);
     setText('');
   };
 
-  if (!post) return <div>Loading...</div>;
+  if (isLoading || !post) return <div>Loading...</div>;
 
   return (
     <div>
-      <h2>{post.title}</h2>
+      <h2 className="text-xl font-bold">{post.title}</h2>
       <p>{post.description}</p>
-      <h3>Comments</h3>
-      <ul>
+      <h3 className="font-semibold">Comments</h3>
+      <ul className="space-y-1">
         {post.comments.map((c, i) => (
           <li key={i}>{c.text}</li>
         ))}
       </ul>
-      {token && (
-        <form onSubmit={addComment}>
-          <input value={text} onChange={(e) => setText(e.target.value)} />
-          <button type="submit">Add Comment</button>
+      {authenticated && (
+        <form onSubmit={addComment} className="mt-2 space-y-2">
+          <input
+            className="border p-2 w-full"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <Button type="submit">Add Comment</Button>
         </form>
       )}
     </div>

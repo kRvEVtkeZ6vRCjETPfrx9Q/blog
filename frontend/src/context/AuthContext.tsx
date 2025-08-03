@@ -1,36 +1,37 @@
 import { createContext, useEffect, useState } from 'react';
-import { setAuthToken } from '../api';
+import api from '../api';
 
 interface AuthContextType {
-  token?: string;
-  login: (token: string) => void;
+  authenticated: boolean;
+  login: () => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
+  authenticated: false,
   login: () => {},
   logout: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | undefined>(() => localStorage.getItem('token') || undefined);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    setAuthToken(token || null);
-  }, [token]);
+    api
+      .get('/auth/me')
+      .then(() => setAuthenticated(true))
+      .catch(() => setAuthenticated(false));
+  }, []);
 
-  const login = (t: string) => {
-    setToken(t);
-    localStorage.setItem('token', t);
-  };
+  const login = () => setAuthenticated(true);
 
-  const logout = () => {
-    setToken(undefined);
-    localStorage.removeItem('token');
+  const logout = async () => {
+    await api.post('/auth/logout');
+    setAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ authenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

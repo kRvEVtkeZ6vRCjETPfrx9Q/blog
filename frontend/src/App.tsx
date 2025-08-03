@@ -10,7 +10,7 @@ import PostDetail from './pages/PostDetail';
 import PostForm from './pages/PostForm';
 
 function App() {
-  const { token } = useContext(AuthContext);
+  const { authenticated } = useContext(AuthContext);
   return (
     <BrowserRouter>
       <NavBar />
@@ -19,8 +19,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/posts" element={<Posts />} />
-        <Route path="/posts/new" element={token ? <PostForm /> : <Navigate to="/login" />} />
-        <Route path="/posts/:id/edit" element={token ? <PostForm /> : <Navigate to="/login" />} />
+        <Route path="/posts/new" element={authenticated ? <PostForm /> : <Navigate to="/login" />} />
+        <Route path="/posts/:id/edit" element={authenticated ? <PostForm /> : <Navigate to="/login" />} />
         <Route path="/posts/:id" element={<PostDetail />} />
       </Routes>
     </BrowserRouter>
